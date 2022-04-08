@@ -5,11 +5,25 @@ const express = require('express');
 const req = require('express/lib/request');
 const date = require('date-and-time');
 const { body } = require('express-validator');
-
+const morgan = require('morgan')
 
 const app = express();
 //middleware 
 app.use(express.json());
+
+
+// Configure morgan to log body of POST request
+morgan.token('person', (req) => {
+    if (req.method === 'POST') return JSON.stringify(req.body)
+    return null
+})
+
+app.use(
+  morgan(
+    ':method :url :status :res[content-length] - :response-time ms :person',
+  ),
+)
+
 
 //Database   
 let phoneBook = [
@@ -70,20 +84,20 @@ const entry = {
     number: req.body.number };
 
 //3.6 Input Validation (Error Handling/Bad Request)
-if (req.body.name === phoneBook.name)
+if (phoneBook.some(phoneBook => phoneBook.name === req.body.name))
 return res.status(400).json ({
-    error: 'Name already exists'
+    error: 'Name already exists.'
 })
 
 
 if (!req.body.name || req.body.name.length < 3 )
     return res.status(400).json ({
-        error: 'Name is required; must be at least 3 characters'
+        error: 'Name is required; must be at least 3 characters.'
     })
 
 if (!req.body.number || req.body.number.length < 3 )
     return res.status(400).json ({
-        error: 'Number is required; must be at least 7 characters'
+        error: 'Number is required; must be at least 7 characters.'
     })
 
 
