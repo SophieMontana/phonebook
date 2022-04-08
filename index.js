@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 
-// Configure morgan to log body of POST request
+// Configure MORGAN to log body of POST request
 morgan.token('person', (req) => {
     if (req.method === 'POST') return JSON.stringify(req.body)
     return null
